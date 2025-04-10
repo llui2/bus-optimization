@@ -52,7 +52,7 @@ def road_network(seed, d, shift):
     pos = {(x, y): (x, y) for x, y in G.nodes()}
     G = nx.convert_node_labels_to_integers(G)
     pos = {i: (x+random.uniform(0, shift), y+random.uniform(0, shift))
-           for i, ((x, y), _) in enumerate(pos.items())}
+        for i, ((x, y), _) in enumerate(pos.items())}
 
     # Add pos attribute to nodes
     for i, node in enumerate(G.nodes):

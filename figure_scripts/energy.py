@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-plt.rc('font', family='Times', size=10)
+plt.rc('font', family='serif', size=10)
 plt.rc('mathtext', fontset='cm')
 
 energy = pd.read_csv("data/energy.csv")
