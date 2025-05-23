@@ -24,6 +24,7 @@ for i in range(num_lines):
 
 
 ax1.set_ylabel("First term")
+ax2.set_ylabel("Second term")
 
 ax1.set_xticks([])
 ax1.set_xticklabels([])
@@ -34,5 +35,8 @@ ax2.set_xticklabels([])
 ax3.set_ylabel("Energy")
 ax3.set_xlabel("Changes")
 
+# ax1.set_xscale("log")
+# ax2.set_xscale("log")
+# ax3.set_xscale("log")
 
 plt.savefig("plots/energy.png", dpi=300)

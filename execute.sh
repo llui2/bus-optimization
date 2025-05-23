@@ -1,5 +1,7 @@
-python script/informal.py
+# python script/lambda.py
+# python figure_scripts/lambda_plot.py
 
+python script/simple.py
 python figure_scripts/city.py
 python figure_scripts/od_matrix.py
 python figure_scripts/city_bus.py
