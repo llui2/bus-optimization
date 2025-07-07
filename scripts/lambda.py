@@ -13,9 +13,9 @@ from informal import (
     )
 
 seed, d, shift = 10, 20, 0.2
-max_iter, T_0 = 1e3, 3
+max_iter, T_0 = 1e4, 3
 
-lambdaas = np.arange(0, 2, 0.1)
+lambdaas = np.arange(0, 1, 0.05)
 
 G, pos = road_network(seed, d, shift)
 N_B = bus_stops(G)

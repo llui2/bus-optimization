@@ -5,6 +5,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import igraph as ig
 from tqdm import tqdm
+from collections import defaultdict
+from itertools import chain
 import warnings
 
 # Suppress warning
@@ -284,244 +286,101 @@ def bus_stop_cost(G, N_B):
 # LINES OBJECTIVE FUNCTION
 
 
-# def lines_energies_old(D, lines, node_to_bus_index, C, lambdaa):
-#     """
-#     Objective function for bus route optimization using igraph.
-#     """
-
-#     # Create graph
-#     G_B = ig.Graph()
-
-#     nodes = list(set([node for line in lines for node in line]))
-#     node_index = {node: idx for idx, node in enumerate(nodes)}
-#     G_B.add_vertices(len(nodes))
-
-#     edges = []
-#     costs = []
-#     for line in lines:
-#         edge = [(min(node_index[line[i]], node_index[line[i+1]]),
-#                  max(node_index[line[i]], node_index[line[i+1]])) for i in range(len(line)-1)]
-#         edges += edge
-#         G_B.add_edges(edge)
-#         cost = [C[node_to_bus_index[line[i]], node_to_bus_index[line[i+1]]]
-#                 for i in range(len(line)-1)]
-#         G_B.es["cost"] = [float(c) for c in cost]
-#         costs += cost
-#     # Count repeated edges
-#     n_L = [edges.count(edge) for edge in G_B.get_edgelist()]
-
-#     # Compute passenger shares
-#     # p_e = \sum_{i \neq j} D_{ij} \frac{\sigma_{ij}(e)}{\sigma_{ij}} / n_L(e) / length(path(i,j))
-#     num_nodes = len(nodes)
-#     p_e_term = [0] * len(edges)
-#     node_bus_indices = [node_to_bus_index[node] for node in nodes]
-#     for source in range(num_nodes):
-#         for target in range(num_nodes):
-#             if source != target:
-#                 # paths = G_B.get_shortest_paths(source, to=target, weights=G_B.es["cost"], output="epath")
-#                 paths = G_B.get_shortest_paths(
-#                     source, to=target, weights=G_B.es["cost"], output="epath")
-#                 num_edges_path = len(paths[0]) if len(paths) > 0 else 1
-#                 if num_edges_path > 0:
-#                     D_value = D[node_bus_indices[source],
-#                                 node_bus_indices[target]] / num_edges_path
-#                 for path in paths:
-#                     for edge in path:
-#                         p_e_term[edge] += float(D_value / n_L[edge])
-
-#     # Initialize list of objective functions and indices
-#     obj = [0] * len(lines)
-#     fstt = [0] * len(lines)
-#     sndt = [0] * len(lines)
-#     # Compute objective function for each line
-#     for i, line in enumerate(lines):
-#         line_edges = [(min(node_index[line[i]], node_index[line[i+1]]),
-#                        max(node_index[line[i]], node_index[line[i+1]])) for i in range(len(line)-1)]
-#         # Compute first term
-#         sum1 = sum([p_e_term[G_B.get_eid(edge[0], edge[1])]
-#                    for edge in line_edges])
-#         # second_term = sum([G_B.es[G_B.get_eid(edge[0], edge[1])]["cost"] for edge in line_edges])
-#         sum2 = sum([costs[G_B.get_eid(edge[0], edge[1])]
-#                    for edge in line_edges])
-#         fstt[i] = - sum1
-#         sndt[i] = lambdaa * sum2
-#         obj[i] = - sum1 + lambdaa * sum2
-
-#     return obj, fstt, sndt
-
-
-# def lines_energies_prev(D, lines, node_to_bus_index, C, lambdaa):
-#     """
-#     Objective function for bus route optimization using igraph.
-#     """
-
-#     # Create graph
-#     G_B = ig.Graph()
-
-#     # Add vertices to the graph
-#     from itertools import chain
-#     nodes = list(set(chain.from_iterable(lines)))
-#     node_index = {node: idx for idx, node in enumerate(nodes)}
-#     G_B.add_vertices(len(nodes))
-
-#     # Add edges to the graph with costs and degeneration
-#     from collections import defaultdict
-#     edge_cost_dict = {}
-#     edge_count = defaultdict(int)
-#     for line in lines:
-#         for i in range(len(line) - 1):
-#             u = node_index[line[i]]
-#             v = node_index[line[i+1]]
-#             edge = (min(u, v), max(u, v))
-#             bus_u = node_to_bus_index[line[i]]
-#             bus_v = node_to_bus_index[line[i+1]]
-#             cost = C[bus_u, bus_v]
-#             if edge not in edge_cost_dict:
-#                 edge_cost_dict[edge] = cost
-#             edge_count[edge] += 1
-#     edges = list(edge_cost_dict.keys())
-#     costs = [edge_cost_dict[edge] for edge in edges]
-#     nL = [edge_count[edge] for edge in edges]
-#     G_B.add_edges(edges)
-#     G_B.es["cost"] = [float(c) for c in costs]
-
-#     num_nodes = len(nodes)
-#     p_e_term = [0.0] * len(edges)
-#     node_bus_indices = [node_to_bus_index[node]
-#                         for node in nodes]  # Precompute node -> bus index once
-#     weights = G_B.es["cost"]  # cache attribute lookup
-
-#     # Compute passenger shares
-#     for source in range(num_nodes):
-#         bus_src = node_bus_indices[source]
-#         for target in range(num_nodes):
-#             if source == target:
-#                 continue
-#             bus_tgt = node_bus_indices[target]
-#             # Compute shortest path (edge-path)
-#             paths = G_B.get_shortest_paths(
-#                 source, to=target, weights=weights, output="epath")
-#             if not paths or not paths[0]:  # no path found
-#                 continue
-#             path_edges = paths[0]
-#             num_edges = len(path_edges)
-#             D_val = D[bus_src, bus_tgt]
-#             weight_per_edge = D_val / num_edges
-#             for edge in path_edges:
-#                 p_e_term[edge] += weight_per_edge / nL[edge]
-
-#     # Compute objective function for each line
-#     obj = [0.0] * len(lines)
-#     fstt = [0.0] * len(lines)
-#     sndt = [0.0] * len(lines)
-#     for i, line in enumerate(lines):
-#         line_edges = [(min(node_index[line[j]], node_index[line[j+1]]),
-#                        max(node_index[line[j]], node_index[line[j+1]])) for j in range(len(line) - 1)]
-#         edge_ids = [G_B.get_eid(u, v) for u, v in line_edges]
-#         sum1 = sum(p_e_term[eid] for eid in edge_ids)
-#         sum2 = sum(costs[eid] for eid in edge_ids)
-#         fstt[i] = -sum1
-#         sndt[i] = sum2
-#         obj[i] = fstt[i] + lambdaa * sndt[i]
-
-#     return obj, fstt, sndt
-
-from itertools import chain
-from collections import defaultdict
-
 def lines_energies(D, lines, node_to_bus_index, C, lambdaa):
     """
     Objective function for bus route optimization using igraph.
     """
+
     # Create graph
     G_B = ig.Graph()
-    
+
     # Flatten and deduplicate nodes
     nodes = list(set(chain.from_iterable(lines)))
     node_index = {node: idx for idx, node in enumerate(nodes)}
     G_B.add_vertices(len(nodes))
-    
-    # Build edge data 
+
+    # Build edge data
     edge_cost_dict = {}
     edge_count = defaultdict(int)
-    
+
     # Process all lines at once to build edge data
     for line in lines:
         for i in range(len(line) - 1):
             u, v = node_index[line[i]], node_index[line[i+1]]
             edge = (min(u, v), max(u, v))  # Undirected edge
-            bus_u, bus_v = node_to_bus_index[line[i]], node_to_bus_index[line[i+1]]
-            
+            bus_u, bus_v = node_to_bus_index[line[i]
+                                             ], node_to_bus_index[line[i+1]]
+
             if edge not in edge_cost_dict:
                 edge_cost_dict[edge] = C[bus_u, bus_v]
             edge_count[edge] += 1
-    
+
     # Add all edges
     edges = list(edge_cost_dict.keys())
     costs = [edge_cost_dict[edge] for edge in edges]
     nL = [edge_count[edge] for edge in edges]
-    
+
     G_B.add_edges(edges)
     G_B.es["cost"] = [float(c) for c in costs]
-    
+
     # Precompute all data needed for passenger share calculation
     num_nodes = len(nodes)
     p_e_term = np.zeros(len(edges))
     node_bus_indices = [node_to_bus_index[node] for node in nodes]
     weights = G_B.es["cost"]
-    
+
     # Compute passenger shares for all origin-destination pairs
     for source in range(num_nodes):
         bus_src = node_bus_indices[source]
-        
+
         # Need to process all targets since demand could be asymmetric
         for target in range(num_nodes):
             if source == target:
                 continue
-                
+
             bus_tgt = node_bus_indices[target]
             D_val = D[bus_src, bus_tgt]
-            
+
             if D_val == 0:  # Skip if no demand between these stops
                 continue
-                
+
             # Compute shortest path
             paths = G_B.get_shortest_paths(
                 source, to=target, weights=weights, output="epath")
             if not paths or not paths[0]:
                 continue
-                
+
             path_edges = paths[0]
             num_edges = len(path_edges)
             weight_per_edge = D_val / num_edges
-            
+
             # Update p_e_term for all edges in this path
             for edge in path_edges:
                 p_e_term[edge] += weight_per_edge / nL[edge]
-    
+
     # Compute objective function for each line
     obj = [0.0] * len(lines)
     fstt = [0.0] * len(lines)
     sndt = [0.0] * len(lines)
-    
+
     for i, line in enumerate(lines):
         # Calculate edges in this line
         line_edges = []
         for j in range(len(line) - 1):
             u, v = node_index[line[j]], node_index[line[j+1]]
             line_edges.append((min(u, v), max(u, v)))
-            
+
         # Look up edge IDs
         edge_ids = [G_B.get_eid(*edge) for edge in line_edges]
-        
+
         # Calculate objective components
         sum1 = sum(p_e_term[eid] for eid in edge_ids)
         sum2 = sum(costs[eid] for eid in edge_ids)
-        
+
         fstt[i] = -sum1  # Demand term
         sndt[i] = sum2   # Cost term
-        obj[i] = fstt[i] + lambdaa * sndt[i]
-    
+        obj[i] = (1-lambdaa) * fstt[i] + lambdaa * sndt[i]
+
     return obj, fstt, sndt
 
 
@@ -549,13 +408,13 @@ def lines_simulated_annealing(D, N_B, lines, node_to_bus_index, C, max_iter, T_0
     file_name = "data/energy.csv"
     with open(file_name, "w") as f:
         f.write(
-            ",".join(f"ft{k},st{k},e{k}" for k in range(len(H_old))) + "\n")
-        f.write(",".join(str(ft) + "," + str(st) + "," + str(obj)
+            "MCS," + ",".join(f"ft{k},st{k},e{k}" for k in range(len(H_old))) + "\n")
+        f.write(f"0," + ",".join(str(ft) + "," + str(st) + "," + str(obj)
                 for ft, st, obj in zip(ft_old, st_old, H_old)) + "\n")
 
     j = -1
-    for i in tqdm(range(int(max_iter)), desc="SA optimization", ncols=100):
-    # for i in range(int(max_iter)):
+    # for i in tqdm(range(int(max_iter)), desc="SA optimization", ncols=100):
+    for i in range(int(max_iter)):
 
         if j == len(lines)-1:
             j = 0
@@ -588,7 +447,7 @@ def lines_simulated_annealing(D, N_B, lines, node_to_bus_index, C, max_iter, T_0
                 H_old = H_new
 
                 with open(file_name, "a") as f:
-                    f.write(",".join(str(ft) + "," + str(st) + "," + str(obj)
+                    f.write(f"{i+1}," + ",".join(str(ft) + "," + str(st) + "," + str(obj)
                             for ft, st, obj in zip(ft_new, st_new, H_new)) + "\n")
 
         except OverflowError:
@@ -682,14 +541,15 @@ def global_travel_cost(C, lines, node_to_bus_index):
     """
     Computes the global travel cost for the bus routes.
     """
+
     # Initialize travel cost
     travel_cost = 0
 
     # Compute travel cost
     for line in lines:
         for i in range(len(line)-1):
-                travel_cost += C[node_to_bus_index[line[i]],
-                                 node_to_bus_index[line[i+1]]]
+            travel_cost += C[node_to_bus_index[line[i]],
+                             node_to_bus_index[line[i+1]]]
 
     travel_cost = np.round(travel_cost, 2)
 

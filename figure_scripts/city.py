@@ -36,7 +36,7 @@ edgesG = nx.draw_networkx_edges(G, pos=pos, ax=ax, edge_color="silver", width=4,
 nodesG.set_zorder(1)
 edgesG.set_zorder(1)
 
-labels = nx.draw_networkx_labels(G, pos=pos, ax=ax, font_size=4, font_color="black")
+labels = nx.draw_networkx_labels(G, pos=pos, ax=ax, font_size=3, font_color="black")
 
 nodesG_B = nx.draw_networkx_nodes(G_B, pos=pos, ax=ax, node_size=40, node_color="white",
                                   edgecolors="silver", alpha=1)

@@ -16,11 +16,13 @@ num_lines = len(energy.columns) // 3
 
 line_colors = ["red", "blue", "lime", "darkorange", "darkviolet"]
 
+t = energy["MCS"]
+
 for i in range(num_lines):
     
-    ax1.plot(energy[f'ft{i}'], color=line_colors[i])
-    ax2.plot(energy[f'st{i}'], color=line_colors[i])
-    ax3.plot(energy[f'e{i}'], color=line_colors[i])
+    ax1.plot(t,energy[f'ft{i}'], color=line_colors[i])
+    ax2.plot(t,energy[f'st{i}'], color=line_colors[i])
+    ax3.plot(t,energy[f'e{i}'], color=line_colors[i])
 
 
 ax1.set_ylabel("First term")
