@@ -1,0 +1,1 @@
+Aqui hi ha les diferents proves realitzades per obtenir el millor valor de lambda per SA. Ara per ara estàtica
