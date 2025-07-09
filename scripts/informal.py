@@ -206,9 +206,9 @@ def OD_matrix(seed, N_B, pos, d):
     for i in range(len(N_B)):
         for j in range(i+1, len(N_B)):
             if i != j:
-                D[i, j] = max(field_values[j] * 10, field_values[i]
-                              * 10) * random.choice([0 for _ in range(10)] + [1])
-                D[j, i] = D[i, j]
+                if random.random() < 0.05:
+                    D[i, j] = max(field_values[j] * 10, field_values[i] * 10)
+                    D[j, i] = D[i, j]
 
     # Round OD matrix values
     D = np.round(D, 2)
@@ -413,8 +413,8 @@ def lines_simulated_annealing(D, N_B, lines, node_to_bus_index, C, max_iter, T_0
                 for ft, st, obj in zip(ft_old, st_old, H_old)) + "\n")
 
     j = -1
-    # for i in tqdm(range(int(max_iter)), desc="SA optimization", ncols=100):
-    for i in range(int(max_iter)):
+    for i in tqdm(range(int(max_iter)), desc="SA optimization", ncols=100):
+    # for i in range(int(max_iter)):
 
         if j == len(lines)-1:
             j = 0

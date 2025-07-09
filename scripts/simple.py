@@ -1,6 +1,6 @@
 import informal 
 
-seed = 10  # random.randint(0, 1000)
+seed = 1  # random.randint(0, 1000)
 d = 20
 shift = 0.2
 
@@ -22,7 +22,7 @@ num_lines = 2
 L = 8
 lines = [informal.initial_bus_route(N_B, L) for _ in range(num_lines)]
 
-lambdaa = 2# 0.2 * L * num_lines * 1
+lambdaa = 0.6
 
 print("\n lambda = ", lambdaa, "\n")
 
