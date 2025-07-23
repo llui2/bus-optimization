@@ -1,0 +1,2 @@
+# just execute the following sentence
+ python .\mapGA.py
