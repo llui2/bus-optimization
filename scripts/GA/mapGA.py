@@ -5,11 +5,10 @@ import numpy as np
 import subprocess
 
 print("Executant GeneticOptimizer.py...")
-subprocess.run(["python", "../GA2/GeneticOptimizer.py"], check=True)
+subprocess.run(["python", "../GA/GeneticOptimizer.py"], check=True)
 
 with open("../../results/best_line_GA.txt", "r") as f:
     BEST_LINE = list(map(int, f.read().strip().split(",")))
-#BEST_LINE=[151, 169, 187, 247, 229, 211, 271, 253]
 print("Millor línia trobada:", BEST_LINE)
 
 ROAD_NODES_PATH = "../../data/road_network/nodes.csv"
@@ -27,24 +26,6 @@ pos = nx.get_node_attributes(G, 'pos')
 
 # Dibuix del mapa
 plt.figure(figsize=(10, 10))
-
-# Afegim una capa de densitat de població (gaussiana centrada)
-x_coords = nodes_df["x"]
-y_coords = nodes_df["y"]
-xmin, xmax = x_coords.min(), x_coords.max()
-ymin, ymax = y_coords.min(), y_coords.max()
-res = 300  # resolució
-
-x_grid = np.linspace(xmin, xmax, res)
-y_grid = np.linspace(ymin, ymax, res)
-X, Y = np.meshgrid(x_grid, y_grid)
-
-x0 = (xmin + xmax) / 2
-y0 = (ymin + ymax) / 2
-sigma = (xmax - xmin) / 8 # per canviar la mida del cercle de densitat
-
-Z = np.exp(-((X - x0)**2 + (Y - y0)**2) / (2 * sigma**2))
-plt.imshow(Z, extent=[xmin, xmax, ymin, ymax], origin='lower', cmap='Reds', alpha=0.3)
 
 # llegim les parades disponibles
 bus_stops_df = pd.read_csv("../../data/bus_network/nodes.csv")
@@ -69,6 +50,6 @@ nx.draw_networkx_labels(G, pos, labels=labels, font_size=10, font_color='black')
 
 plt.title("Línia de bus optimitzada per GA", fontsize=14)
 plt.axis("off")
-plt.tight_layout()
+plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
 plt.savefig("../../plots/GA/mapa_linea_GA.png", dpi=300)
 plt.show()
