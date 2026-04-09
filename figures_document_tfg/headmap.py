@@ -40,6 +40,7 @@ ax.set_xlabel("Destí")
 ax.set_ylabel("Origen")
 plt.tight_layout()
 plt.savefig("results/od_heatmap.png", dpi=300)
+plt.savefig("results/od_heatmap.pdf", bbox_inches="tight")
 plt.close()
 
 # --- 2) GRAF (mateixa OD) ---
@@ -65,4 +66,4 @@ for i in range(N):
 g.render("results/od_graph", format="png", cleanup=True)
 g.render("results/od_graph", format="pdf", cleanup=True)
 
-print("Generat: od_heatmap.png, od_graph.png i od_graph.pdf")
+print("Generat: od_heatmap.png, od_heatmap.pdf, od_graph.png i od_graph.pdf")
