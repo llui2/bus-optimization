@@ -1,2 +1,0 @@
-- normalitzar funcio energia
-- 
