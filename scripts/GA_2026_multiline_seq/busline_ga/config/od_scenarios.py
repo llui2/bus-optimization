@@ -8,10 +8,11 @@ from busline_ga.config.project_paths import BUS_NETWORK_DIR, SCRIPT_RESULTS_DIR
 
 OD_SCENARIO_FILENAMES: Dict[str, str] = {
     "base": "od_base.csv",
-    "one_center": "od_one_center.csv",
-    "feeder_core": "od_feeder_core.csv",
-    "two_centers": "od_two_centers.csv",
     "center_periphery": "od_center_periphery.csv",
+    # Backward-compatible alias: the final thesis base OD is the former dense_hotspots matrix.
+    "dense_hotspots": "od_base.csv",
+    "one_center": "od_one_center.csv",
+    "two_centers": "od_two_centers.csv",
 }
 
 

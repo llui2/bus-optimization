@@ -14,9 +14,9 @@ def _find_project_root() -> Path:
 def _find_ga_root() -> Path:
     current = Path(__file__).resolve()
     for candidate in [current.parent] + list(current.parents):
-        if candidate.name == "GA_2026":
+        if (candidate / "busline_ga").is_dir():
             return candidate
-    raise RuntimeError("No s'ha pogut detectar GA_ROOT: falta el directori 'GA_2026'.")
+    raise RuntimeError("No s'ha pogut detectar GA_ROOT: falta el directori 'busline_ga'.")
 
 
 PROJECT_ROOT = _find_project_root()
