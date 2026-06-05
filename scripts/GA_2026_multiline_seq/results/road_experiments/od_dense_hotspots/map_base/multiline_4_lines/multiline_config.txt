@@ -1,0 +1,15 @@
+od_case=dense_hotspots
+map_case=base
+line_length=6
+n_lines=4
+population_size=150
+generations=100
+lambda=0.5
+seed=42
+shared_stop_penalty=0.0
+save_improvement_snapshots=False
+save_evolution_plots=False
+od_min_to_plot=10.0
+road_nodes_path=C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\data\road_network\variants\base\nodes.csv
+road_edges_path=C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\data\road_network\variants\base\edges.csv
+od_matrix_path=C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\data\bus_network\od_scenarios\od_dense_hotspots.csv
