@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import random
-from typing import List, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -11,7 +11,6 @@ from matplotlib.lines import Line2D
 from busline_ga.core.line_builder import build_line_from_stops
 from busline_ga.core.network_model import NetworkModel, Node
 from busline_ga.core.objective_function import EvaluationResult
-from busline_ga.experiments.main_multiline_ga import run_multiline_ga_experiment
 from busline_ga.visualization.ga_snapshot_plotter import (
     build_edge_paths,
     collect_od_pairs,
@@ -61,6 +60,22 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=0.0,
         help="Optional fitness penalty for reusing stops from previous fixed lines.",
+    )
+    parser.add_argument(
+        "--save-improvement-snapshots",
+        action="store_true",
+        help="Save a multi-line PDF snapshot whenever a line optimization improves.",
+    )
+    parser.add_argument(
+        "--save-evolution-plots",
+        action="store_true",
+        help="Save multi-line GA evolution CSV files and plots.",
+    )
+    parser.add_argument(
+        "--od-min-to-plot",
+        type=float,
+        default=10.0,
+        help="Absolute OD demand threshold used only when drawing OD connections.",
     )
     args = parser.parse_args()
 
@@ -159,18 +174,18 @@ def save_multiline_map(
     lines: Sequence[Sequence[Node]],
     evaluations: Sequence[EvaluationResult],
     output_pdf: str,
-    output_png: str,
-    title: str,
+    title: Optional[str] = None,
+    od_min_to_plot: float = 10.0,
 ) -> None:
     rng = random.Random(42)
     edge_paths = build_edge_paths(network, rng)
-    od_pairs = collect_od_pairs(network)
+    od_pairs = collect_od_pairs(network, od_min_to_plot=od_min_to_plot)
     density_center = compute_density_center(network)
     fig, ax = plt.subplots(figsize=(9, 9))
 
     draw_base_network(ax, network, edge_paths)
     draw_density_center(ax, density_center, "#B22222")
-    draw_od_overlay(ax, network, od_pairs, "#B22222")
+    draw_od_overlay(ax, network, od_pairs, "#B22222", od_min_to_plot=od_min_to_plot)
 
     line_handles: List[Line2D] = []
 
@@ -215,15 +230,46 @@ def save_multiline_map(
     if existing_legend is not None:
         ax.add_artist(existing_legend)
 
-    ax.legend(handles=line_handles, loc="upper left", frameon=True, fontsize=8)
-    ax.set_title(title)
+    ncol = min(2, max(1, len(line_handles)))
+    ax.legend(
+        handles=line_handles,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.10),
+        ncol=ncol,
+        frameon=False,
+        fontsize=8,
+    )
+    if title:
+        ax.set_title(title)
+    fig.subplots_adjust(bottom=0.18)
     fig.savefig(output_pdf, bbox_inches="tight")
-    fig.savefig(output_png, bbox_inches="tight", dpi=220)
     plt.close(fig)
+    print(f"OD threshold used for multiline map: {od_min_to_plot}")
+    print(f"OD pairs plotted on multiline map: {len(od_pairs)}")
+
+
+def save_multiline_map_from_run_result(
+    run_result: Dict[str, Any],
+    output_pdf: Optional[str] = None,
+    od_min_to_plot: float = 10.0,
+) -> str:
+    results_dir = run_result["results_dir"]
+    map_pdf = output_pdf or os.path.join(results_dir, "multiline_map.pdf")
+    save_multiline_map(
+        network=run_result["network"],
+        lines=run_result["lines"],
+        evaluations=run_result["evaluations"],
+        output_pdf=map_pdf,
+        title=None,
+        od_min_to_plot=od_min_to_plot,
+    )
+    return map_pdf
 
 
 def main() -> None:
     args = parse_args()
+    from busline_ga.experiments.main_multiline_ga import run_multiline_ga_experiment
+
     run_result = run_multiline_ga_experiment(
         od_case=args.od_case,
         map_case=args.map_case,
@@ -234,28 +280,15 @@ def main() -> None:
         lambda_=args.lambda_,
         seed=args.seed,
         shared_stop_penalty=args.shared_stop_penalty,
+        save_improvement_snapshots=args.save_improvement_snapshots,
+        save_evolution_plots=args.save_evolution_plots,
+        od_min_to_plot=args.od_min_to_plot,
     )
-    results_dir = run_result["results_dir"]
-    output_pdf = os.path.join(results_dir, "multiline_map.pdf")
-    output_png = os.path.join(results_dir, "multiline_map.png")
-    title = (
-        f"Multi-line GA | od={args.od_case} | map={args.map_case} | "
-        f"n_lines={args.n_lines} | lambda={args.lambda_} | "
-        f"shared_stop_penalty={args.shared_stop_penalty} | "
-        f"adjusted_service={run_result['system_metrics']['adjusted_passenger_service']:.2f} | "
-        f"total_cost={run_result['system_metrics']['total_route_cost']:.2f} | "
-        f"fitness={run_result['system_metrics']['system_fitness']:.3f}"
-    )
-    save_multiline_map(
-        network=run_result["network"],
-        lines=run_result["lines"],
-        evaluations=run_result["evaluations"],
-        output_pdf=output_pdf,
-        output_png=output_png,
-        title=title,
+    output_pdf = save_multiline_map_from_run_result(
+        run_result=run_result,
+        od_min_to_plot=args.od_min_to_plot,
     )
     print("PDF guardat a:", output_pdf)
-    print("PNG guardat a:", output_png)
 
 
 if __name__ == "__main__":

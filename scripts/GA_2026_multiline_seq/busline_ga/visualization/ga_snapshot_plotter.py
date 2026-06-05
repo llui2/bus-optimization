@@ -123,17 +123,22 @@ def draw_base_network(
     ax.margins(0.03)
 
 
-def collect_od_pairs(network: NetworkModel) -> List[Tuple[Node, Node, float]]:
+def collect_od_pairs(
+    network: NetworkModel,
+    od_min_to_plot: float = 0.0,
+) -> List[Tuple[Node, Node, float]]:
     od_pairs: List[Tuple[Node, Node, float]] = []
     bus_stops = network.bus_stops
 
+    # Visualization-only threshold: the full OD matrix remains unchanged for
+    # service, fitness and optimization calculations.
     for i in range(len(bus_stops)):
         for j in range(i + 1, len(bus_stops)):
             stop_i = bus_stops[i]
             stop_j = bus_stops[j]
             demand = float(network.get_od_value(stop_i, stop_j))
 
-            if demand > 0.0:
+            if demand >= od_min_to_plot and demand > 0.0:
                 od_pairs.append((stop_i, stop_j, demand))
 
     return od_pairs
@@ -220,6 +225,8 @@ def draw_od_overlay(
     network: NetworkModel,
     od_pairs: List[Tuple[Node, Node, float]],
     color: str,
+    od_min_to_plot: float = 0.0,
+    legend_location: str = "below",
 ) -> None:
     if not od_pairs:
         return
@@ -237,17 +244,32 @@ def draw_od_overlay(
             [x1, x2],
             [y1, y2],
             color=color,
-            alpha=alpha,
-            linewidth=linewidth,
+            alpha=min(alpha, 0.30),
+            linewidth=min(linewidth, 2.2),
             zorder=2.6,
         )
 
     legend_elements = [
-        Line2D([0], [0], color=color, lw=0.9, alpha=0.10, label="Demanda baixa"),
-        Line2D([0], [0], color=color, lw=1.8, alpha=0.20, label="Demanda mitjana"),
-        Line2D([0], [0], color=color, lw=3.0, alpha=0.35, label="Demanda alta"),
+        Line2D(
+            [0],
+            [0],
+            color=color,
+            lw=1.4,
+            alpha=0.25,
+            label=f"Displayed OD pairs: d >= {od_min_to_plot:g}",
+        ),
     ]
-    ax.legend(handles=legend_elements, loc="upper right", frameon=True)
+    if legend_location == "below":
+        ax.legend(
+            handles=legend_elements,
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.035),
+            frameon=False,
+            ncol=1,
+            fontsize=9,
+        )
+    else:
+        ax.legend(handles=legend_elements, loc="upper right", frameon=True, fontsize=9)
 
 
 def get_snapshot_directory(output_dir: Optional[str] = None) -> str:
@@ -273,17 +295,18 @@ def save_improvement_snapshot(
     network: NetworkModel,
     snapshot: ImprovementSnapshotData,
     output_dir: Optional[str] = None,
+    od_min_to_plot: float = 10.0,
 ) -> str:
     positions = network.positions
     rng = random.Random(42)
     edge_paths = build_edge_paths(network, rng)
-    od_pairs = collect_od_pairs(network)
+    od_pairs = collect_od_pairs(network, od_min_to_plot=od_min_to_plot)
     density_center = compute_density_center(network)
 
     fig, ax = plt.subplots(figsize=(8, 8))
     draw_base_network(ax, network, edge_paths)
     draw_density_center(ax, density_center, "#B22222")
-    draw_od_overlay(ax, network, od_pairs, "#B22222")
+    draw_od_overlay(ax, network, od_pairs, "#B22222", od_min_to_plot=od_min_to_plot)
 
     line_edges = [normalize_edge(u, v) for (u, v) in snapshot.evaluation.line_edges]
     for u, v in line_edges:
@@ -316,6 +339,9 @@ def save_improvement_snapshot(
     fig.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
 
+    print(f"Snapshot OD threshold used: {od_min_to_plot}")
+    print(f"Snapshot OD pairs plotted: {len(od_pairs)}")
+    print(f"Snapshot figure saved to: {out_pdf}")
     return out_pdf
 
 
@@ -325,17 +351,18 @@ def save_final_line_with_od(
     evaluation: EvaluationResult,
     output_path: str,
     title_prefix: str = "LÃ­nia de bus optimitzada",
+    od_min_to_plot: float = 10.0,
 ) -> str:
     positions = network.positions
     rng = random.Random(42)
     edge_paths = build_edge_paths(network, rng)
-    od_pairs = collect_od_pairs(network)
+    od_pairs = collect_od_pairs(network, od_min_to_plot=od_min_to_plot)
     density_center = compute_density_center(network)
 
     fig, ax = plt.subplots(figsize=(8, 8))
     draw_base_network(ax, network, edge_paths)
     draw_density_center(ax, density_center, "#B22222")
-    draw_od_overlay(ax, network, od_pairs, "#B22222")
+    draw_od_overlay(ax, network, od_pairs, "#B22222", od_min_to_plot=od_min_to_plot)
 
     line_edges = [normalize_edge(u, v) for (u, v) in evaluation.line_edges]
     for u, v in line_edges:
@@ -384,5 +411,8 @@ def save_final_line_with_od(
     )
     fig.savefig(output_path, bbox_inches="tight")
     plt.close(fig)
+    print(f"OD threshold used for figure: {od_min_to_plot}")
+    print(f"OD pairs plotted: {len(od_pairs)}")
+    print(f"Final OD figure saved to: {output_path}")
     return output_path
 
