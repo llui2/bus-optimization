@@ -1,0 +1,41 @@
+od_case: one_center
+map_case: base
+od_matrix_path: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\data\bus_network\od_scenarios\od_one_center.csv
+road_nodes_path: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\data\road_network\variants\base\nodes.csv
+road_edges_path: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\data\road_network\variants\base\edges.csv
+lambda: 0.75
+seed: 42
+od_min_to_plot: 1.0
+normalization_method: structural_cost_and_service_bounds
+normalization_cost_min: 13.951477171602743
+normalization_cost_max: 187.26804033215745
+normalization_cost_min_type: structural_lower_bound_shortest_stop_transitions
+normalization_cost_max_type: structural_upper_bound_shortest_stop_transitions
+normalization_cost_transition_count: 5
+normalization_service_min: 0.0
+normalization_service_max: 264.0
+normalization_service_max_type: structural_upper_bound_top_od_pairs
+normalization_service_pair_count: 15
+init_ratio_service: 0.3
+init_ratio_demand: 0.25
+init_ratio_spatial: 0.15
+init_ratio_hybrid: 0.15
+init_ratio_random: 0.15
+inject_best_service_candidate: True
+mutation_prob: 0.3
+weight_service_replace: 0.4
+best_individual: [187, 169, 151, 193, 211, 229]
+best_individual_repaired: [187, 169, 151, 193, 211, 229]
+best_individual_order_cost: 15.858570827559333
+best_individual_repaired_order_cost: 15.858570827559333
+best_individual_order_improvement: 0.0
+best_service_candidate: [235, 253, 211, 229, 271, 289]
+best_service_candidate_ordered: [235, 253, 211, 229, 271, 289]
+best_service_candidate_passenger_service: 184.2
+best_service_candidate_cost: 18.574345583443804
+best_service_candidate_fitness_at_lambda: 0.15442708669133193
+best_fitness: 0.15670947521058215
+cost: 15.858570827559335
+cost_norm: 0.011003528002052081
+passenger_service: 174.2
+passenger_service_norm: 0.6598484848484848
