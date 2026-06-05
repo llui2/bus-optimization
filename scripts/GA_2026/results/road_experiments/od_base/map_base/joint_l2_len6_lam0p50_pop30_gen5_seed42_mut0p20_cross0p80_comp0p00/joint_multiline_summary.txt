@@ -1,0 +1,150 @@
+=== CONFIGURATION ===
+od_case: base
+map_case: base
+n_lines: 2
+line_length: 6
+population_size: 30
+generations: 5
+lambda: 0.5
+seed: 42
+mutation_prob: 0.2
+crossover_prob: 0.8
+compactness_penalty: 0.0
+max_segment_cost_soft: None
+max_line_cost_soft: None
+max_edges_per_line_soft: None
+run_name: 
+results_dir: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\script\GA_2026\results\road_experiments\od_base\map_base\joint_l2_len6_lam0p50_pop30_gen5_seed42_mut0p20_cross0p80_comp0p00
+
+=== NORMALIZATION BOUNDS ===
+normalization_cost_min: 13.951477171602743
+normalization_cost_max: 187.26804033215745
+normalization_service_min: 0.0
+normalization_service_max: 523.5
+
+=== FINAL LINES ===
+line_1: [79, 229, 385, 151, 55, 139]
+line_2: [121, 289, 247, 373, 7, 43]
+
+=== ADJUSTED PER-LINE METRICS ===
+Adjusted per-line metrics are recomputed after the full joint system is known and are the main per-line interpretation for the final joint solution.
+line_1: adjusted_fitness=0.17222161178207204 adjusted_service=330.0404829129562 adjusted_service_norm=0.630449824093517 cost=63.521158216587345 cost_norm=0.28600660052937293 shared_edge_ratio=0.09615384615384616
+line_2: adjusted_fitness=0.03289973309773525 adjusted_service=194.96772758405393 adjusted_service_norm=0.37243118927230934 cost=67.09583357127941 cost_norm=0.30663172307683884 shared_edge_ratio=0.08771929824561403
+
+=== RAW PER-LINE METRICS (REFERENCE ONLY) ===
+Raw per-line metrics come from evaluating each line individually. They are kept for reference/debugging and are not the main final per-line interpretation for the joint GA.
+line_1: raw_fitness=-0.14157063550823948 raw_passenger_service=1.5000000000000002 raw_service_norm=0.002865329512893983 cost=63.521158216587345 cost_norm=0.28600660052937293
+line_2: raw_fitness=-0.15188319678197243 raw_passenger_service=1.5000000000000002 raw_service_norm=0.002865329512893983 cost=67.09583357127941 cost_norm=0.30663172307683884
+
+=== GLOBAL SYSTEM METRICS ===
+total_route_cost: 130.61699178786677
+unique_edge_cost: 102.02708612339065
+adjusted_passenger_service: 513.2262717128267
+adjusted_service: 513.2262717128267
+raw_line_passenger_service_sum: 3.0000000000000004
+raw_route_service_sum: 548.5720880653777
+naive_edge_passenger_service: 548.5720880653777
+unique_edge_passenger_service: 525.0082104970104
+unique_edge_service_sum: 525.0082104970104
+single_line_service_min: 0.0
+single_line_service_max: 523.5
+system_service_min: 0.0
+system_service_max: 1047.0
+single_line_cost_min: 13.951477171602743
+single_line_cost_max: 187.26804033215745
+system_cost_min: 27.902954343205487
+system_cost_max: 374.5360806643149
+service_per_total_cost: 3.929245840742913
+service_per_unique_edge_cost: 5.030294319021671
+system_cost_norm: 0.2963191618031059
+system_service_norm: 0.49018746104376953
+base_system_fitness: 0.09693414962033181
+system_fitness: 0.09693414962033181
+compactness_penalty: 0.0
+max_line_cost_soft: 57.28061796174143
+max_segment_cost_soft: 24.34484524318047
+max_edges_per_line_soft: 40.0
+compactness_total_cost_component: 0.2963191618031059
+compactness_max_line_excess: 0.1713531724831201
+compactness_max_segment_excess: 0.20788812435238166
+compactness_max_edges_excess: 0.7
+compactness_penalty_value: 0.0
+average_line_cost: 65.30849589393338
+max_line_cost: 67.09583357127941
+average_segment_cost: 13.061699178786677
+max_segment_cost: 29.405849458434258
+average_edges_per_line: 66.5
+max_edges_per_line: 68.0
+average_segment_edges: 13.3
+max_segment_edges: 30.0
+unique_stop_count: 12
+total_stop_occurrences: 12
+shared_stop_count: 0
+shared_stops: 0.0
+shared_stop_ratio: 0.0
+unique_edge_count: 104
+unique_edges: 104.0
+total_route_edges: 133.0
+total_edge_occurrences: 109
+internal_repeated_edges: 24.0
+cross_line_shared_edges: 5.0
+shared_edge_count: 5
+shared_edges: 5.0
+total_cost: 130.61699178786677
+edge_overlap_ratio: 0.04807692307692308
+stop_overlap_ratio: 0.0
+shared_edge_ratio: 0.04807692307692308
+
+=== JOINT NORMALIZATION REFERENCES ===
+single_line_service_min: 0.0
+single_line_service_max: 523.5
+system_service_min: 0.0
+system_service_max: 1047.0
+single_line_cost_min: 13.951477171602743
+single_line_cost_max: 187.26804033215745
+system_cost_min: 27.902954343205487
+system_cost_max: 374.5360806643149
+adjusted_service: 513.2262717128267
+raw_route_service_sum: 548.5720880653777
+unique_edge_service_sum: 525.0082104970104
+total_route_cost: 130.61699178786677
+system_service_norm: 0.49018746104376953
+system_cost_norm: 0.2963191618031059
+system_fitness: 0.09693414962033181
+
+=== COMPACTNESS / LENGTH CONTROL ===
+The compactness penalty discourages visually unrealistic long or indirect bus lines. It does not replace the cost term; it adds an optional extra penalty to reduce excessive line length or very long segments between consecutive selected stops.
+compactness_penalty: 0.0
+max_line_cost_soft: 57.28061796174143
+max_segment_cost_soft: 24.34484524318047
+max_edges_per_line_soft: 40.0
+compactness_penalty_value: 0.0
+compactness_total_cost_component: 0.2963191618031059
+compactness_max_line_excess: 0.1713531724831201
+compactness_max_segment_excess: 0.20788812435238166
+compactness_max_edges_excess: 0.7
+base_system_fitness: 0.09693414962033181
+system_fitness: 0.09693414962033181
+average_line_cost: 65.30849589393338
+max_line_cost: 67.09583357127941
+average_segment_cost: 13.061699178786677
+max_segment_cost: 29.405849458434258
+average_edges_per_line: 66.5
+max_edges_per_line: 68.0
+
+=== SERVICE METRIC DEFINITIONS ===
+raw_line_passenger_service_sum: Sum of the individual line passenger_service values returned by the single-line evaluations.
+naive_edge_passenger_service: Edge-based service counted once per line usage. Shared edges are counted multiple times.
+unique_edge_passenger_service: Edge-based service counted once per unique road edge.
+adjusted_passenger_service: Edge-based service adjusted using shared-edge counts. This is the service used for system_service_norm and system_fitness.
+
+=== PAIRWISE OVERLAP ===
+line_1_line_2_shared_stops: 0
+line_1_line_2_shared_edges: 5
+
+=== OUTPUT FILES ===
+joint_multiline_config: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\script\GA_2026\results\road_experiments\od_base\map_base\joint_l2_len6_lam0p50_pop30_gen5_seed42_mut0p20_cross0p80_comp0p00\joint_multiline_config.txt
+joint_multiline_system_metrics: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\script\GA_2026\results\road_experiments\od_base\map_base\joint_l2_len6_lam0p50_pop30_gen5_seed42_mut0p20_cross0p80_comp0p00\joint_multiline_system_metrics.csv
+joint_multiline_lines: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\script\GA_2026\results\road_experiments\od_base\map_base\joint_l2_len6_lam0p50_pop30_gen5_seed42_mut0p20_cross0p80_comp0p00\joint_multiline_lines.csv
+joint_multiline_adjusted_line_metrics: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\script\GA_2026\results\road_experiments\od_base\map_base\joint_l2_len6_lam0p50_pop30_gen5_seed42_mut0p20_cross0p80_comp0p00\joint_multiline_adjusted_line_metrics.csv
+joint_multiline_pairwise_overlap: C:\Users\neuso\OneDrive - URV\uni\4t\TFG\bus-optimization-main\bus-optimization-main\bus-optimization\script\GA_2026\results\road_experiments\od_base\map_base\joint_l2_len6_lam0p50_pop30_gen5_seed42_mut0p20_cross0p80_comp0p00\joint_multiline_pairwise_overlap.csv
