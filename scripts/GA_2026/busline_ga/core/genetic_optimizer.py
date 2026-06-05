@@ -4,7 +4,7 @@ import itertools
 import math
 import random
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import networkx as nx
 
@@ -1377,6 +1377,8 @@ class GeneticOptimizer:
         reinitialize_population: bool = True,
         save_improvement_snapshots: bool = True,
         snapshot_output_dir: Optional[str] = None,
+        improvement_callback: Optional[Callable[[int, List[Node], EvaluationResult], None]] = None,
+        generation_callback: Optional[Callable[[int, List[Node], EvaluationResult], None]] = None,
     ):
         best_individual: List[Node] = []
         best_score = float("-inf")
@@ -1392,10 +1394,16 @@ class GeneticOptimizer:
             generation_best = max(scored_population, key=lambda x: x[1].fitness)
             self._update_history(scored_population)
 
+            if generation_callback is not None:
+                generation_callback(generation, list(generation_best[0]), generation_best[1])
+
             if generation_best[1].fitness > best_score:
                 best_individual = list(generation_best[0])
                 best_score = generation_best[1].fitness
                 no_improvement_counter = 0
+
+                if improvement_callback is not None:
+                    improvement_callback(generation, best_individual, generation_best[1])
 
                 if save_improvement_snapshots:
                     self._save_global_best_snapshot(

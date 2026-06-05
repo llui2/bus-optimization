@@ -91,8 +91,6 @@ def load_network_model(
         src = int(row["src"])
         dst = int(row["dst"])
 
-        # Si el csv ja tÃ© cost, el fem servir.
-        # Si no, usem distÃ ncia euclidiana.
         if "cost" in edges_df.columns:
             cost = float(row["cost"])
         else:
